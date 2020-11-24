@@ -66,7 +66,7 @@ class bandera:
         for i in range(len(thetas)):
             if 83<np.abs(thetas[i])<92:
                 horizontal += 1
-            elif 175<np.abs(thetas[i])<185:
+            elif 179<np.abs(thetas[i])<182:
                 vertical += 1
             elif thetas[i] == 0:
                 zeros += 1
