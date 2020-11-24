@@ -13,19 +13,22 @@ class bandera:
         self.image = cv2.imread(path_file)
 
     def colores(self):
-        number_initial_colors = 4
+        print('calculating number of colors...')
+        number_max_colors = 4
         image_to_process = np.array(self.image, dtype=np.float64) / 255
         rows, cols, ch = image_to_process.shape
         image_array = np.reshape(image_to_process, (rows * cols, ch))
         image_array_sample = shuffle(image_array, random_state=0)[:10000]
-        model = KMeans(n_clusters=number_initial_colors, random_state=0).fit(image_array_sample)
+        model = KMeans(n_clusters=number_max_colors, random_state=0).fit(image_array_sample)
         self.labels = model.predict(image_array)
 
         number_of_colors = np.max(self.labels)+1
         print(f'number of colors is {number_of_colors}')
+        print("")
         return number_of_colors
 
     def porcentaje(self):
+        print('calculating percetage of each color...')
         label_index = np.arange(0, len(np.unique(self.labels)) + 1)
         (histogram, _) = np.histogram(self.labels, bins = label_index)
         histogram = histogram.astype('float')
@@ -33,9 +36,12 @@ class bandera:
 
         histogram = histogram*100
         print(f'percetage of each color = {histogram}')
+        print("")
         return histogram
 
     def orientacion(self):
+        orientation = ['vertical','horizontal','mixed']
+        print('calculating orientation of the image...')
         high_thresh = 300
         bw_edges = cv2.Canny(self.image, high_thresh * 0.3, high_thresh, L2gradient=True)
         hough_tf = hough(bw_edges)
@@ -56,6 +62,7 @@ class bandera:
         horizontal = 0
         vertical = 0
         zeros = 0
+
         for i in range(len(thetas)):
             if 83<np.abs(thetas[i])<92:
                 horizontal += 1
@@ -66,12 +73,12 @@ class bandera:
 
         if horizontal >= 2:
             if zeros >= 2:
-                print('mixta')
-                return 'mixta'
+                print(f'orientation of image is: {orientation[2]}')
+                return orientation[2]
             else:
-                print('horizontal')
-                return 'horizontal'
+                print(f'orientation of image is: {orientation[1]}')
+                return orientation[1]
 
         if vertical >= 2:
-            print('vertical')
-            return 'vertical'
+            print(f'orientation of image is: {orientation[0]}')
+            return orientation[0]
